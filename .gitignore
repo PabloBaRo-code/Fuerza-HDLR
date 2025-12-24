@@ -7,8 +7,8 @@ env/
 venv/
 ENV/
 
-# Streamlit
-.streamlit/
+# Streamlit (permitir config.toml pero ignorar secrets)
+.streamlit/secrets.toml
 
 # OS files
 .DS_Store
