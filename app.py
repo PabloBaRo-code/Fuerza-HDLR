@@ -495,8 +495,8 @@ def main():
     # -------------------------------------------------------------------------
     # ENCABEZADO Y BRANDING
     # -------------------------------------------------------------------------
-    logo_path = r"C:\Users\balle\RECURSOS ANTIGRAVITY\agent\skills\hdlr-estilo-marca\recursos\assets\logos\LogosHDLR_blanco.png"
-    hero_img_path = r"C:\Users\balle\RECURSOS ANTIGRAVITY\agent\skills\hdlr-estilo-marca\recursos\assets\fotografia\maloriaga_A_woman_lifts_a_weight._high_definitionsaturated_colo_f92877bd-8300-4a41-9b3e-76e411af12b6.png"
+    logo_path = os.path.join("assets", "logo.png")
+    hero_img_path = os.path.join("assets", "hero.png")
 
     # Verificación de recursos
     if not os.path.exists(logo_path):
