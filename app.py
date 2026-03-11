@@ -370,27 +370,27 @@ def render_exercise_buttons(exercise_name, video_url, unique_id):
     <html>
     <head>
         <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', -apple-system, sans-serif; }
+            * {{ margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', -apple-system, sans-serif; }}
             body {{ background: transparent; overflow: hidden; }}
             .container {{ display: flex; flex-direction: column; gap: 0.5rem; }}
             .btn-row {{ display: flex; gap: 0.5rem; flex-wrap: wrap; }}
-            .copy-btn {
+            .copy-btn {{
                 background: #0000FF; color: white; border: none; padding: 0.5rem 0.8rem;
                 border-radius: 12px; cursor: pointer; font-size: 0.7rem; font-weight: 600;
                 transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.3rem;
                 text-transform: uppercase; letter-spacing: 0.02em;
-            }
-            .copy-btn:hover { background: #00C9F8; transform: translateY(-1px); }
-            .copy-btn.copied { background: #22c55e !important; }
-            .link-btn {
+            }}
+            .copy-btn:hover {{ background: #00C9F8; transform: translateY(-1px); }}
+            .copy-btn.copied {{ background: #22c55e !important; }}
+            .link-btn {{
                 background: transparent; color: #00C9F8; border: 1px solid #0000FF;
                 padding: 0.5rem 0.8rem; border-radius: 12px; cursor: pointer; font-size: 0.7rem;
                 font-weight: 600; transition: all 0.2s ease; text-decoration: none;
                 display: inline-flex; align-items: center; gap: 0.3rem;
                 text-transform: uppercase; letter-spacing: 0.02em;
-            }
-            .link-btn:hover { background: #0000FF; color: white; }
-            .link-btn.copied { background: #22c55e !important; color: white !important; border-color: #22c55e !important; }
+            }}
+            .link-btn:hover {{ background: #0000FF; color: white; }}
+            .link-btn.copied {{ background: #22c55e !important; color: white !important; border-color: #22c55e !important; }}
             .url-display {{
                 margin-top: 0.2rem; font-family: monospace; font-size: 0.65rem;
                 color: #666; word-break: break-all; max-width: 100%;
@@ -521,7 +521,7 @@ def main():
     # Imagen Hero - Entrenamiento de Fuerza
     col_h1, col_h2, col_h3 = st.columns([0.15, 0.7, 0.15])
     with col_h2:
-        st.image(hero_img_path, use_container_width=True)
+        st.image(hero_img_path, width=600)
         st.markdown('<div class="main-header-container" style="padding: 0; margin-top: -2rem; height: 10px; border-bottom: none;"></div>', unsafe_allow_html=True)
     
     # Botón para mostrar filtros (útil cuando el sidebar está colapsado)
