@@ -518,12 +518,6 @@ def main():
         </div>
     ''', unsafe_allow_html=True)
 
-    # Imagen Hero - Entrenamiento de Fuerza
-    col_h1, col_h2, col_h3 = st.columns([0.15, 0.7, 0.15])
-    with col_h2:
-        st.image(hero_img_path, width=600)
-        st.markdown('<div class="main-header-container" style="padding: 0; margin-top: -2rem; height: 10px; border-bottom: none;"></div>', unsafe_allow_html=True)
-    
     # Botón para mostrar filtros (útil cuando el sidebar está colapsado)
     col_spacer, col_btn, col_spacer2 = st.columns([2, 1, 2])
     with col_btn:
