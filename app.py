@@ -18,77 +18,122 @@ from thefuzz import fuzz, process
 # CONFIGURACIÓN DE LA PÁGINA
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Biblioteca de Fuerza - HDLR",
+    page_title="Fuerza HDLR - Biblioteca de Fuerza",
     page_icon="💪",
     layout="wide",
     initial_sidebar_state="expanded"
 )
+import os
 
 # -----------------------------------------------------------------------------
-# ESTILOS CSS - BRANDING HDLR (Naranja / Negro - Minimalista)
+# ESTILOS CSS - BRANDING HDLR (Deep Blue / Negro - Minimalista Premium)
 # -----------------------------------------------------------------------------
 st.markdown("""
 <style>
-    /* Importar fuente moderna Inter */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    /* Importar fuentes desde Google Fonts (Manrope es la oficial) */
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
     
-    * {
-        font-family: 'Inter', sans-serif;
-    }
-    
-    /* =============================================================================
-       HDLR BRANDING SYSTEM
-       ============================================================================= */
     :root {
         --hdlr-black: #000000;
-        --hdlr-dark-gray: #121212;
-        --hdlr-blue: #0045fd;
-        --hdlr-light-blue: #009bf7;
-        --hdlr-white: #ffffff;
-        --hdlr-gray: #888888;
-        --hdlr-border: #333333;
+        --hdlr-dark-gray: #0D0D0D;
+        --hdlr-deep-blue: #0000FF;
+        --hdlr-bright-blue: #00C9F8;
+        --hdlr-blue-gradient: linear-gradient(135deg, #00C9F8 0%, #0000FF 100%);
+        --hdlr-white: #FFFFFF;
+        --hdlr-gray: #A0A0A0;
+        --hdlr-border: #222222;
+        --radius-card: 18px;
+        --radius-btn: 12px;
     }
 
+    * {
+        font-family: 'Manrope', -apple-system, sans-serif;
+    }
+    
     /* Fondo general - Negro Puro */
     .stApp {
         background-color: var(--hdlr-black);
+        color: var(--hdlr-white);
     }
-    
+
     /* =============================================================================
        TYPOGRAPHY
        ============================================================================= */
-    h1, h2, h3 {
+    /* Estilo "Designart": Bold, robusto, fuerte para titulares */
+    h1, h2, .hdlr-display {
         color: var(--hdlr-white);
         font-weight: 800;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.05em;
+        text-transform: uppercase;
+        line-height: 0.9;
+    }
+
+    h3, .hdlr-subheadline {
+        color: var(--hdlr-bright-blue);
+        font-weight: 700;
+        letter-spacing: 0.2em;
         text-transform: uppercase;
     }
 
+    /* Texto de cuerpo: Manrope Light */
+    p, span, label, .stMarkdown {
+        font-weight: 300; 
+    }
+
+    /* =============================================================================
+       HEADER & BRANDING
+       ============================================================================= */
     .main-header-container {
         text-align: center;
-        padding: 2rem 0 3rem 0;
+        padding: 2rem 1rem 3rem 1rem;
+        position: relative;
+        overflow: hidden;
         border-bottom: 1px solid var(--hdlr-border);
-        margin-bottom: 2rem;
-        background: linear-gradient(180deg, rgba(0,69,253,0.1) 0%, rgba(0,0,0,0) 100%);
+        margin-bottom: 3rem;
+    }
+
+    /* Efecto de 'Camino' (Progreso) */
+    .hdlr-path-visual {
+        width: 100%;
+        height: 4px;
+        background: var(--hdlr-blue-gradient);
+        margin: 1rem 0 2rem 0;
+        border-radius: 2px;
+        position: relative;
+    }
+    
+    .hdlr-path-visual::after {
+        content: 'META';
+        position: absolute;
+        right: 0;
+        top: 10px;
+        font-size: 0.6rem;
+        font-weight: 800;
+        color: var(--hdlr-deep-blue);
+        letter-spacing: 0.1em;
+    }
+
+    .hdlr-path-visual::before {
+        content: 'INICIO';
+        position: absolute;
+        left: 0;
+        top: 10px;
+        font-size: 0.6rem;
+        font-weight: 800;
+        color: var(--hdlr-bright-blue);
+        letter-spacing: 0.1em;
     }
 
     .brand-title {
-        font-size: 3rem;
-        font-weight: 900;
-        margin: 0;
-        background: linear-gradient(90deg, #fff, #888);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        line-height: 1.1;
+        font-size: 4rem;
+        margin-bottom: 0.5rem;
     }
 
-    .brand-subtitle {
-        font-size: 1.2rem;
-        color: var(--hdlr-blue);
-        font-weight: 700;
-        letter-spacing: 0.2em;
-        margin-top: 0.5rem;
-        text-transform: uppercase;
+    .brand-claim {
+        font-size: 1.1rem;
+        color: var(--hdlr-gray);
+        font-style: italic;
+        margin-top: 1rem;
     }
 
     /* =============================================================================
@@ -99,118 +144,99 @@ st.markdown("""
     .exercise-card {
         background: var(--hdlr-dark-gray);
         border: 1px solid var(--hdlr-border);
-        border-left: 4px solid var(--hdlr-border);
-        border-radius: 4px; /* Más cuadrado, más técnico */
+        border-radius: var(--radius-card);
         padding: 1.5rem;
-        margin-bottom: 1rem;
-        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+        transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
     .exercise-card:hover {
-        border-left-color: var(--hdlr-blue);
-        transform: translateX(5px);
-        box-shadow: -10px 0 20px -10px rgba(0, 69, 253, 0.2);
+        border-color: var(--hdlr-bright-blue);
+        transform: translateY(-4px);
+        box-shadow: 0 15px 35px -10px rgba(0, 0, 255, 0.3);
     }
     
     .exercise-title {
-        font-size: 1.25rem;
-        font-weight: 700;
+        font-size: 1.4rem;
+        font-weight: 800;
         color: var(--hdlr-white);
         margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        letter-spacing: -0.02em;
+        text-transform: uppercase;
     }
 
     /* Tags */
     .tags-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.6rem;
+        gap: 0.4rem;
         margin-bottom: 1.2rem;
     }
     
     .tag {
-        font-size: 0.7rem;
+        font-size: 0.6rem;
         font-weight: 700;
         text-transform: uppercase;
         padding: 0.3rem 0.8rem;
-        border-radius: 2px;
+        border-radius: 100px;
         letter-spacing: 0.05em;
     }
     
-    .tag-grupo { background: var(--hdlr-blue); color: white; border: 1px solid var(--hdlr-blue); }
-    .tag-subgrupo { background: transparent; color: var(--hdlr-light-blue); border: 1px solid var(--hdlr-light-blue); }
-    .tag-implicacion { background: #222; color: #ccc; border: 1px solid #333; }
-    .tag-material { background: #222; color: #888; border: 1px solid #333; font-style: italic; }
+    .tag-grupo { background: rgba(0, 201, 248, 0.15); color: var(--hdlr-bright-blue); border: 1px solid var(--hdlr-bright-blue); }
+    .tag-subgrupo { background: rgba(0, 0, 255, 0.15); color: #8888ff; border: 1px solid var(--hdlr-deep-blue); }
+    .tag-implicacion { background: #222; color: #fff; }
+    .tag-material { background: transparent; color: #aaa; border: 1px solid #444; }
 
     /* Inputs & Selects */
-    .stTextInput input, .stSelectbox div[data-baseweb="select"] > div {
+    .stTextInput input, .stSelectbox [data-baseweb="select"] {
         background-color: var(--hdlr-dark-gray) !important;
         border: 1px solid var(--hdlr-border) !important;
         color: white !important;
-        border-radius: 4px !important;
-    }
-    
-    .stTextInput input:focus, .stSelectbox div[data-baseweb="select"] > div:focus-within {
-        border-color: var(--hdlr-blue) !important;
-        box-shadow: 0 0 0 1px var(--hdlr-blue) !important;
+        border-radius: var(--radius-btn) !important;
     }
 
-    /* Buttons */
+    /* Buttons con Degradado Oficial HDLR */
     .stButton > button {
-        background: transparent !important;
-        border: 2px solid var(--hdlr-blue) !important;
-        color: var(--hdlr-blue) !important;
-        font-weight: 700 !important;
+        background: var(--hdlr-blue-gradient) !important;
+        border: none !important;
+        color: white !important;
+        font-weight: 800 !important;
         text-transform: uppercase !important;
-        border-radius: 0 !important; /* Botones cuadrados estilo técnico */
-        padding: 0.5rem 1.5rem !important;
+        border-radius: var(--radius-btn) !important;
+        padding: 0.6rem 1.5rem !important;
         transition: all 0.3s ease !important;
+        letter-spacing: 0.1em !important;
     }
     
     .stButton > button:hover {
-        background: var(--hdlr-blue) !important;
-        color: white !important;
-        box-shadow: 0 0 15px rgba(0, 69, 253, 0.5) !important;
+        opacity: 0.9;
+        transform: scale(1.02);
+        box-shadow: 0 0 15px rgba(0, 201, 248, 0.5) !important;
     }
 
-    /* Sidebar */
+    /* Sidebar Styling */
     [data-testid="stSidebar"] {
         background-color: #050505;
-        border-right: 1px solid #22c55e; /* Cambiado a verde sutil o mantener gris? El usuario pidió azul */
+        border-right: 1px solid var(--hdlr-border);
     }
-    
-    [data-testid="stSidebar"] {
-        border-right: 1px solid #222;
-    }
-
-    /* Forzar color azul en sidebar */
-    [data-testid="stSidebar"] h1, 
-    [data-testid="stSidebar"] h2, 
-    [data-testid="stSidebar"] h3, 
-    [data-testid="stSidebar"] label, 
-    [data-testid="stSidebar"] p, 
-    [data-testid="stSidebar"] span,
-    [data-testid="stSidebar"] .stMetric div,
-    [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
-        color: var(--hdlr-blue) !important;
-    }
-
-    [data-testid="stSidebar"] hr {
-        border-color: var(--hdlr-blue) !important;
-        opacity: 0.3;
-    }
-    
-    hr { border-color: #333 !important; }
 
     /* Custom Scrollbar */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #000; }
-    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--hdlr-blue); }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--hdlr-black); }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--hdlr-bright-blue); }
     
-    /* Footer & Hidden Elements */
+    /* Routine Builder Container */
+    .routine-container {
+        background: #0A0A0A;
+        border: 1px solid var(--hdlr-border);
+        border-radius: var(--radius-card);
+        padding: 1.5rem;
+        position: sticky;
+        top: 2rem;
+    }
+
+    /* Hidden Streamlit stuff */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
@@ -344,27 +370,27 @@ def render_exercise_buttons(exercise_name, video_url, unique_id):
     <html>
     <head>
         <style>
-            * {{ margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }}
+            * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', -apple-system, sans-serif; }
             body {{ background: transparent; overflow: hidden; }}
             .container {{ display: flex; flex-direction: column; gap: 0.5rem; }}
             .btn-row {{ display: flex; gap: 0.5rem; flex-wrap: wrap; }}
-            .copy-btn {{
-                background: #0045fd; color: white; border: none; padding: 0.5rem 0.8rem;
-                border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: 600;
+            .copy-btn {
+                background: #0000FF; color: white; border: none; padding: 0.5rem 0.8rem;
+                border-radius: 12px; cursor: pointer; font-size: 0.7rem; font-weight: 600;
                 transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.3rem;
                 text-transform: uppercase; letter-spacing: 0.02em;
-            }}
-            .copy-btn:hover {{ background: #009bf7; transform: translateY(-1px); }}
-            .copy-btn.copied {{ background: #22c55e !important; }}
-            .link-btn {{
-                background: transparent; color: #009bf7; border: 1px solid #0045fd;
-                padding: 0.5rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.7rem;
+            }
+            .copy-btn:hover { background: #00C9F8; transform: translateY(-1px); }
+            .copy-btn.copied { background: #22c55e !important; }
+            .link-btn {
+                background: transparent; color: #00C9F8; border: 1px solid #0000FF;
+                padding: 0.5rem 0.8rem; border-radius: 12px; cursor: pointer; font-size: 0.7rem;
                 font-weight: 600; transition: all 0.2s ease; text-decoration: none;
                 display: inline-flex; align-items: center; gap: 0.3rem;
                 text-transform: uppercase; letter-spacing: 0.02em;
-            }}
-            .link-btn:hover {{ background: #0045fd; color: white; }}
-            .link-btn.copied {{ background: #22c55e !important; color: white !important; border-color: #22c55e !important; }}
+            }
+            .link-btn:hover { background: #0000FF; color: white; }
+            .link-btn.copied { background: #22c55e !important; color: white !important; border-color: #22c55e !important; }
             .url-display {{
                 margin-top: 0.2rem; font-family: monospace; font-size: 0.65rem;
                 color: #666; word-break: break-all; max-width: 100%;
@@ -466,15 +492,37 @@ def remove_from_routine(index):
 def main():
     df, from_excel = load_data()
     
-    # Título principal - HDLR Branding
-    # Cabecera con Logo o Texto Estilizado
+    # -------------------------------------------------------------------------
+    # ENCABEZADO Y BRANDING
+    # -------------------------------------------------------------------------
+    logo_path = r"C:\Users\balle\RECURSOS ANTIGRAVITY\agent\skills\hdlr-estilo-marca\recursos\assets\logos\LogosHDLR_blanco.png"
+    hero_img_path = r"C:\Users\balle\RECURSOS ANTIGRAVITY\agent\skills\hdlr-estilo-marca\recursos\assets\fotografia\maloriaga_A_woman_lifts_a_weight._high_definitionsaturated_colo_f92877bd-8300-4a41-9b3e-76e411af12b6.png"
+
+    # Verificación de recursos
+    if not os.path.exists(logo_path):
+        st.error(f"⚠️ LOGO NO ENCONTRADO EN: {logo_path}")
+    if not os.path.exists(hero_img_path):
+        st.warning(f"⚠️ FOTO HERO NO ENCONTRADA EN: {hero_img_path}")
+
+    # Estructura del Header Premium
+    col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
+    with col_l2:
+        st.image(logo_path, use_container_width=True)
+    
     st.markdown('''
-        <div class="main-header-container">
-            <!-- Poner aquí <img src="URL_DEL_LOGO" width="200" style="margin-bottom: 1rem;"> si se tiene el logo -->
-            <h1 class="brand-title">HIJOS DE LA<br>RESISTENCIA</h1>
-            <div class="brand-subtitle">BIBLIOTECA DE FUERZA</div>
+        <div style="text-align: center; margin-top: -1rem; margin-bottom: 2rem;">
+            <div class="hdlr-subheadline">BIBLIOTECA DE FUERZA</div>
+            <div class="hdlr-path-visual"></div>
+            <div class="brand-claim">"Somos hijos de la resistencia; SOMOS LA RESISTENCIA"</div>
+            <p style="margin-top: 1rem; color: #666;">Tú marcas la meta. Nosotros te acompañamos en el camino.</p>
         </div>
     ''', unsafe_allow_html=True)
+
+    # Imagen Hero - Entrenamiento de Fuerza
+    col_h1, col_h2, col_h3 = st.columns([0.15, 0.7, 0.15])
+    with col_h2:
+        st.image(hero_img_path, use_container_width=True)
+        st.markdown('<div class="main-header-container" style="padding: 0; margin-top: -2rem; height: 10px; border-bottom: none;"></div>', unsafe_allow_html=True)
     
     # Botón para mostrar filtros (útil cuando el sidebar está colapsado)
     col_spacer, col_btn, col_spacer2 = st.columns([2, 1, 2])
@@ -573,8 +621,10 @@ def main():
             st.metric("Grupos", len([g for g in df['Grupo'].unique() if g]))
         
         st.markdown("---")
-        st.markdown("##### 💪 Powered by")
-        st.markdown("*Hijos de la Resistencia*")
+        st.image(logo_path, width=150)
+        st.markdown("**Hijos de la Resistencia**")
+        st.markdown('<p style="font-size: 0.7rem; opacity: 0.5;">Estilo oficial v1.1 • Fuera HDLR</p>', unsafe_allow_html=True)
+        st.markdown('<p style="font-size: 0.7rem; opacity: 0.5;">Alcanza tu mejor versión</p>', unsafe_allow_html=True)
     
     # -------------------------------------------------------------------------
     # LAYOUT 2 COLUMNAS (RESULTADOS vs RUTINA)
@@ -721,9 +771,9 @@ def main():
     # -------------------------------------------------------------------------
     with col_routine:
         st.markdown("""
-        <div style="background: #121212; border: 1px solid #333; border-radius: 8px; padding: 1rem; position: sticky; top: 2rem;">
-            <h3 style="color: #0045fd; margin-bottom: 1rem; border-bottom: 1px solid #333; padding-bottom: 0.5rem;">
-                📝 Mi Rutina
+        <div class="routine-container">
+            <h3 style="color: var(--hdlr-bright-blue); margin-bottom: 1rem; border-bottom: 1px solid var(--hdlr-border); padding-bottom: 0.5rem; font-size: 1.2rem;">
+                📝 MI RUTINA
             </h3>
         """, unsafe_allow_html=True)
         
