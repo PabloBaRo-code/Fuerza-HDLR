@@ -68,11 +68,21 @@ st.markdown("""
         line-height: 0.9;
     }
 
-    h3, .hdlr-subheadline {
+    h3 {
         color: var(--hdlr-bright-blue);
         font-weight: 700;
         letter-spacing: 0.2em;
         text-transform: uppercase;
+    }
+
+    .hdlr-subheadline {
+        background: var(--hdlr-blue-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        font-size: 2rem;
     }
 
     /* Texto de cuerpo: Manrope Light */
@@ -95,10 +105,10 @@ st.markdown("""
     /* Efecto de 'Camino' (Progreso) */
     .hdlr-path-visual {
         width: 100%;
-        height: 4px;
+        height: 8px;
         background: var(--hdlr-blue-gradient);
         margin: 1rem 0 2rem 0;
-        border-radius: 2px;
+        border-radius: 4px;
         position: relative;
     }
     
@@ -106,7 +116,7 @@ st.markdown("""
         content: 'META';
         position: absolute;
         right: 0;
-        top: 10px;
+        top: 14px;
         font-size: 0.6rem;
         font-weight: 800;
         color: var(--hdlr-deep-blue);
@@ -117,7 +127,7 @@ st.markdown("""
         content: 'INICIO';
         position: absolute;
         left: 0;
-        top: 10px;
+        top: 14px;
         font-size: 0.6rem;
         font-weight: 800;
         color: var(--hdlr-bright-blue);
@@ -505,7 +515,7 @@ def main():
         st.warning(f"⚠️ FOTO HERO NO ENCONTRADA EN: {hero_img_path}")
 
     # Estructura del Header Premium
-    col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
+    col_l1, col_l2, col_l3 = st.columns([1.5, 1, 1.5])
     with col_l2:
         st.image(logo_path, use_container_width=True)
     
