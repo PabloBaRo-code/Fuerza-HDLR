@@ -291,6 +291,11 @@ def load_data():
         # Filtrar filas vacías
         df = df[df['Ejercicio'].str.len() > 0]
         
+        # Ordenación inicial por la jerarquía especificada:
+        # 1. Ejercicio 2. Grupo 3. Subgrupo 4. Implicacion 5. Material
+        df = df.sort_values(by=['Ejercicio', 'Grupo', 'Subgrupo', 'Implicacion', 'Material'])
+        df = df.reset_index(drop=True)
+        
         return df, True
         
     except FileNotFoundError:
@@ -302,7 +307,9 @@ def load_data():
             'Enlace': ['https://youtu.be/example1', 'https://youtu.be/example2', 'https://youtu.be/example3'],
             'Material': ['Barra', 'Barra', 'Sin material']
         }
-        return pd.DataFrame(mock_data), False
+        df_mock = pd.DataFrame(mock_data)
+        df_mock = df_mock.sort_values(by=['Ejercicio', 'Grupo', 'Subgrupo', 'Implicacion', 'Material']).reset_index(drop=True)
+        return df_mock, False
 
 # -----------------------------------------------------------------------------
 # FUNCIONES DE UTILIDAD
@@ -324,7 +331,7 @@ def extract_youtube_id(url):
     return None
 
 def fuzzy_search(query, df, threshold=50):
-    """Búsqueda difusa en el DataFrame."""
+    """Búsqueda difusa en el DataFrame respetando jerarquía de importancia."""
     if not query or query.strip() == "":
         return df
     
@@ -332,18 +339,22 @@ def fuzzy_search(query, df, threshold=50):
     results = []
     
     for idx, row in df.iterrows():
-        scores = [
-            fuzz.partial_ratio(query, str(row['Ejercicio']).lower()),
-            fuzz.partial_ratio(query, str(row['Grupo']).lower()),
-            fuzz.partial_ratio(query, str(row['Subgrupo']).lower()),
-            fuzz.partial_ratio(query, str(row['Material']).lower())
-        ]
-        max_score = max(scores)
+        # Score individual por campo
+        score_ej = fuzz.partial_ratio(query, str(row['Ejercicio']).lower())
+        score_gr = fuzz.partial_ratio(query, str(row['Grupo']).lower())
+        score_sg = fuzz.partial_ratio(query, str(row['Subgrupo']).lower())
+        score_im = fuzz.partial_ratio(query, str(row['Implicacion']).lower())
+        score_ma = fuzz.partial_ratio(query, str(row['Material']).lower())
+        
+        max_score = max(score_ej, score_gr, score_sg, score_im, score_ma)
         
         if max_score >= threshold:
-            results.append((idx, max_score))
+            # Guardamos la fila junto con sus scores separados para ordenar
+            results.append((idx, score_ej, score_gr, score_sg, score_im, score_ma))
     
-    results.sort(key=lambda x: x[1], reverse=True)
+    # Prioridad de ordenación según los resultados de la búsqueda: 
+    # 1. Ejercicio 2. Grupo 3. Subgrupo 4. Implicacion 5. Material
+    results.sort(key=lambda x: (x[1], x[2], x[3], x[4], x[5]), reverse=True)
     
     if results:
         return df.loc[[r[0] for r in results]]
@@ -358,6 +369,8 @@ def get_suggestions(query, df, limit=5):
     all_terms.update(df['Ejercicio'].unique())
     all_terms.update(df['Grupo'].unique())
     all_terms.update(df['Subgrupo'].unique())
+    all_terms.update(df['Implicacion'].unique())
+    all_terms.update(df['Material'].unique())
     all_terms = [t for t in all_terms if t and str(t).strip()]
     
     matches = process.extract(query, all_terms, scorer=fuzz.partial_ratio, limit=limit)
